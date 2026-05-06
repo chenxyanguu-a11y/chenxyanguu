@@ -1,0 +1,36 @@
+server:
+  port: 1000
+spring:
+  application:
+    name: mall-gateway
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: 123456
+      timeout: 10000
+      database: 0
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      default-filters: # 注意：这里是 default-filters
+        - name: RequestRateLimiter
+      routes:
+        - id: mall-user-route
+          uri: lb://mall-user
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - StripPrefix=1
+
+
+        - id: order-service-route
+          uri: lb://order-service
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - StripPrefix=1
+
+
