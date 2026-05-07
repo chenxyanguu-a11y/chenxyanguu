@@ -10,6 +10,6 @@ public interface UserMapper {
     @Select("select * from sys_user where username=#{username}")
     SysUser selectByUsername(String username);
 
-    @Insert("insert into sys_user(username,password,phone,user_type,status,deleted) values(#{username},#{password},#{phone},#{userType},#{status},#{deleted})")
+    @Insert("insert into sys_user(username,password,nickname,phone,email,user_type,status,deleted) values(#{username},#{password},#{nickname},#{phone},#{email},#{userType},#{status},#{deleted})")
     int insertUser(SysUser sysUser);
 }
