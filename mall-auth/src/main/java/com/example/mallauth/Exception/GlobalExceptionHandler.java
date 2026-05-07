@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(LoginException.class)
     public Result handleLoginException(LoginException e){
-        return Result.error(e.getCode()+e.getMessage());
+        return Result.error(e.getCode(),e.getMessage());
     }
 
 

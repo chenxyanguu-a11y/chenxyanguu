@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler(UserException.class)
     public Result handleUserException(UserException e) {
-        return Result.error(e.getMessage());
+        return Result.error(e.getCode(),e.getMessage());
     }
 }

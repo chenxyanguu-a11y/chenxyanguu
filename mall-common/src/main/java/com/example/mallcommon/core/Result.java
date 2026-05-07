@@ -15,8 +15,8 @@ public class Result<T> {
         return new Result<> (200,"操作成功",data);
     }
 
-    public static<T> Result<T> error(String message){
-        return new Result<>(0,message,null);
+    public static<T> Result<T> error(Integer code ,String message){
+        return new Result<>(code,message,null);
     }
 
     public static<T> Result<T> success(){

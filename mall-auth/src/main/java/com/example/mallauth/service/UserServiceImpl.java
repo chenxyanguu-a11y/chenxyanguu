@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            throw new LoginException(400, "Token无效");
+            throw new LoginException(401, "Token无效");
         }
 
         Object userId = claims.get("userId");

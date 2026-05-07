@@ -8,6 +8,7 @@ import com.example.malluser.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -18,16 +19,26 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void register(RegisterRequest request) {
         if (!StringUtils.hasText(request.getUsername())
                 || !StringUtils.hasText(request.getPassword())
                 || !StringUtils.hasText(request.getNickname())) {
-            throw new UserException("username、password、nickname不能为空");
+            throw new UserException(400, "username、password、nickname不能为空");
+        }
+        if (request.getRoleId() == null) {
+            throw new UserException(400, "roleId不能为空");
+        }
+        if (request.getRoleId() == 1L) {
+            throw new UserException(400, "不允许注册管理员角色");
+        }
+        if (request.getRoleId() != 2L && request.getRoleId() != 3L) {
+            throw new UserException(400, "roleId仅支持2(商家)或3(用户)");
         }
 
         SysUser existedUser = userMapper.selectByUsername(request.getUsername());
         if (existedUser != null) {
-            throw new UserException("用户名已存在");
+            throw new UserException(400, "用户名已存在");
         }
 
         SysUser sysUser = new SysUser();
@@ -40,5 +51,6 @@ public class UserServiceImpl implements UserService {
         sysUser.setStatus(1);
         sysUser.setDeleted(0);
         userMapper.insertUser(sysUser);
+        userMapper.insertUserRole(sysUser.getId(), request.getRoleId());
     }
 }

@@ -9,4 +9,5 @@ public class RegisterRequest {
     private String nickname;
     private String phone;
     private String email;
+    private Long roleId;
 }

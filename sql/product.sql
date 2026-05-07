@@ -1,0 +1,21 @@
+CREATE TABLE product (
+                         id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '商品ID',
+                         merchant_id BIGINT NOT NULL COMMENT '商家ID',
+                         category_id BIGINT NOT NULL COMMENT '分类ID',
+                         product_name VARCHAR(100) NOT NULL COMMENT '商品名称',
+                         product_desc TEXT COMMENT '商品描述',
+                         price DECIMAL(10,2) NOT NULL COMMENT '商品价格',
+                         main_image VARCHAR(255) DEFAULT NULL COMMENT '商品主图',
+                         status TINYINT DEFAULT 2 COMMENT '状态：0下架，1上架，2待审核',
+                         audit_status TINYINT DEFAULT 0 COMMENT '审核状态：0待审核，1通过，2拒绝',
+                         create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                         update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                         deleted TINYINT DEFAULT 0 COMMENT '逻辑删除',
+                         KEY idx_merchant_id (merchant_id),
+                         KEY idx_category_id (category_id),
+                         KEY idx_product_name (product_name),
+                         KEY idx_price (price),
+                         KEY idx_status (status),
+                         KEY idx_audit_status (audit_status),
+                         KEY idx_create_time (create_time)
+) COMMENT='商品表';
