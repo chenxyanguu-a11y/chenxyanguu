@@ -1,0 +1,4 @@
+elasticsearch:
+  host: https://localhost:9200
+  username: elastic
+  password: 74nvRCzkXqV00w-Fus4S
