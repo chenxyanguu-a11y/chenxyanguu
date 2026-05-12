@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -17,17 +18,17 @@ import javax.net.ssl.SSLContext;
 @Configuration
 public class ElasticsearchConfig {
 
-    @Value("${elasticsearch.host}")
+    @Value("${spring.elasticsearch.uris}")
     private String host;
 
-    @Value("${elasticsearch.username}")
+    @Value("${spring.elasticsearch.username}")
     private String username;
 
-    @Value("${elasticsearch.password}")
+    @Value("${spring.elasticsearch.password}")
     private String password;
 
     @Bean
-    public ElasticsearchClient elasticsearchClient() throws Exception {
+    public ElasticsearchClient elasticsearchClient(ObjectMapper objectMapper) throws Exception {
         SSLContext sslContext = SSLContextBuilder.create()
                 .loadTrustMaterial(null, (chain, authType) -> true)
                 .build();
@@ -47,7 +48,7 @@ public class ElasticsearchConfig {
                 .build();
 
         ElasticsearchTransport transport =
-                new RestClientTransport(restClient, new JacksonJsonpMapper());
+                new RestClientTransport(restClient, new JacksonJsonpMapper(objectMapper));
 
         return new ElasticsearchClient(transport);
     }

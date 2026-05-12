@@ -1,4 +1,14 @@
-elasticsearch:
-  host: https://localhost:9200
-  username: elastic
-  password: 74nvRCzkXqV00w-Fus4S
+spring:
+  elasticsearch:
+    uris: https://localhost:9200
+    username: elastic
+    password: 74nvRCzkXqV00w-Fus4S
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mall_cloud?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+
+server:
+  port: 8085
