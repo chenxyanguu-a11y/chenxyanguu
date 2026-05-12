@@ -9,7 +9,8 @@ spring:
 
 
 
-
+server:
+  port: 8082
 
 jwt:
   secret:
