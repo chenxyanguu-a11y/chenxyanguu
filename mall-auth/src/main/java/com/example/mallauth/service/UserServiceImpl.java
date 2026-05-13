@@ -17,9 +17,12 @@ import org.springframework.util.StringUtils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final long TOKEN_EXPIRE_MILLIS = 60 * 60 * 1000;
+
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -43,12 +46,17 @@ public class UserServiceImpl implements UserService {
         claims.put("userId", sysUser.getId());
         claims.put("username", sysUser.getUsername());
         claims.put("userType", sysUser.getUserType());
-        return Jwts.builder()
+
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 900000))
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRE_MILLIS))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
+
+        String redisKey = "login:user:" + sysUser.getId();
+        stringRedisTemplate.opsForValue().set(redisKey, token, TOKEN_EXPIRE_MILLIS, TimeUnit.MILLISECONDS);
+        return token;
     }
 
     @Override
