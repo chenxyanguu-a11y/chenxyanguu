@@ -1,5 +1,6 @@
 server:
-  port: 8084
+  port: 8080
+
 spring:
   application:
     name: mall-gateway
@@ -8,24 +9,32 @@ spring:
       host: 127.0.0.1
       port: 6379
       password: 123456
-      timeout: 10000
+      timeout: 10s
       database: 0
   cloud:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
     gateway:
-      default-filters: # 注意：这里是 default-filters
-        - name: RequestRateLimiter
       routes:
         - id: mall-user-route
-          uri: lb://mall-user
+          uri: lb://user-service
           predicates:
             - Path=/api/user/**
           filters:
             - StripPrefix=1
-
-
+        - id: mall-auth-route
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+        - id: mall-product-route
+          uri: lb://product-service
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - StripPrefix=1
         - id: order-service-route
           uri: lb://order-service
           predicates:
@@ -33,4 +42,18 @@ spring:
           filters:
             - StripPrefix=1
 
+jwt:
+  secret: "mall-auth-secret-key-mall-auth-secret-key"
 
+mall:
+  gateway:
+    auth:
+      whitelist:
+        - /api/auth/login
+        - /api/user/register
+        - /api/product/search
+        - /api/product/page
+        - /api/product/{id}
+      permission-rules:
+        /api/product/add: product:add
+        /api/product/sync: product:sync
