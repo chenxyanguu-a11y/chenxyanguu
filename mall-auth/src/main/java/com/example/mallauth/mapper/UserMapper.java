@@ -11,7 +11,6 @@ public interface UserMapper {
     @Select("select * from sys_user where username=#{username}")
     SysUser SelectByName(String username);
 
-    @Insert("insert into sys_user(username,password,user_type,status,deleted) values(#{username},#{password},#{userType},#{status},#{deleted})")
-    int insertUser(SysUser sysUser);
-
+    @Select("select r.role_id from sys_user_role r join sys_user u on u.id=r.user_id where u.username=#{username}")
+    Integer SelectRoleIdByName(String username);
 }

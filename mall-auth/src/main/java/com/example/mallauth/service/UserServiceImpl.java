@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,20 +39,23 @@ public class UserServiceImpl implements UserService {
         if (sysUser == null) {
             throw new LoginException(400, "登录失败，用户名错误");
         }
-        if (!passwordEncoder.matches(role.getPassward(), sysUser.getPassword())) {
+        if (!passwordEncoder.matches(role.getPassword(), sysUser.getPassword())) {
             throw new LoginException(400, "登录失败，密码错误");
         }
-
+        /**
+         * 用户类型：1管理员，2商家，3用户
+         */
+         Integer roleId=userMapper.SelectRoleIdByName(role.getUsername());
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", sysUser.getId());
         claims.put("username", sysUser.getUsername());
-        claims.put("userType", sysUser.getUserType());
+        claims.put("roleId", roleId);
 
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRE_MILLIS))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes(StandardCharsets.UTF_8))
                 .compact();
 
         String redisKey = "login:user:" + sysUser.getId();
@@ -72,7 +76,7 @@ public class UserServiceImpl implements UserService {
         Claims claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {

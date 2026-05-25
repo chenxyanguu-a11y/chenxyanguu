@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Role {
     private String username;
-    private String passward;
+    private String password;
 }

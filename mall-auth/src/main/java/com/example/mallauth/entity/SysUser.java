@@ -17,10 +17,7 @@ public class SysUser {
     private String nickname;
     private String phone;
     private String email;
-    /**
-     * 用户类型：1管理员，2商家，3用户
-     */
-    private Integer userType;
+
     /**
      * 状态：0禁用，1启用
      */
