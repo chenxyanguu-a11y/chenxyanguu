@@ -26,16 +26,6 @@ public class UserServiceImpl implements UserService {
                 || !StringUtils.hasText(request.getNickname())) {
             throw new UserException(400, "username、password、nickname不能为空");
         }
-        if (request.getRoleId() == null) {
-            throw new UserException(400, "roleId不能为空");
-        }
-        if (request.getRoleId() == 1L) {
-            throw new UserException(400, "不允许注册管理员角色");
-        }
-        if (request.getRoleId() != 2L && request.getRoleId() != 3L) {
-            throw new UserException(400, "roleId仅支持2(商家)或3(用户)");
-        }
-
         SysUser existedUser = userMapper.selectByUsername(request.getUsername());
         if (existedUser != null) {
             throw new UserException(400, "用户名已存在");
@@ -47,10 +37,11 @@ public class UserServiceImpl implements UserService {
         sysUser.setNickname(request.getNickname());
         sysUser.setPhone(request.getPhone());
         sysUser.setEmail(request.getEmail());
-        sysUser.setUserType(3);
+        sysUser.setUserType(2);
         sysUser.setStatus(1);
         sysUser.setDeleted(0);
         userMapper.insertUser(sysUser);
+        request.setRoleId(3L);
         userMapper.insertUserRole(sysUser.getId(), request.getRoleId());
     }
 }
