@@ -1,0 +1,23 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: mall-order
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mall_cloud?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: root
+    password: 123456
+
+  rabbitmq:
+    host: 192.168.22.128
+    port: 5672
+    username: admin
+    password: 123456
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
