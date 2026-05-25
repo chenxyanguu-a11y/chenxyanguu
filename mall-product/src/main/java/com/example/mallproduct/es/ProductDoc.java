@@ -32,6 +32,9 @@ public class ProductDoc {
     @Field(type = FieldType.Keyword)
     private String mainImage;
 
+    @Field(type = FieldType.Integer)
+    private Integer availableStock;
+
     /**
      * 状态：0下架，1上架，2待审核
      */

@@ -29,4 +29,6 @@ public class Product {
     private Integer deleted;
 
     private LocalDateTime createTime;
+
+    private Integer availableStock;
 }

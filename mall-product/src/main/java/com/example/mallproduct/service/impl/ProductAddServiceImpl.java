@@ -3,6 +3,7 @@ package com.example.mallproduct.service.impl;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.example.mallproduct.entity.Product;
 import com.example.mallproduct.es.ProductDoc;
+import com.example.mallproduct.exception.BusinessException;
 import com.example.mallproduct.mapper.ProductMapper;
 import com.example.mallproduct.service.ProductAddService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.io.IOException;
 public class ProductAddServiceImpl implements ProductAddService {
 
     private static final String PRODUCT_INDEX = "product";
+    private static final String ROLE_MERCHANT = "MERCHANT";
     private static final int STATUS_ON_SALE = 1;
     private static final int AUDIT_PASSED = 1;
     private static final int NOT_DELETED = 0;
@@ -32,7 +34,12 @@ public class ProductAddServiceImpl implements ProductAddService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Product addProduct(Product product) throws IOException {
+    public Product addProduct(Product product, Long userId, String role) throws IOException {
+        if (!ROLE_MERCHANT.equals(role)) {
+            throw new BusinessException(403, "无权限新增商品");
+        }
+
+        product.setMerchantId(userId);
         product.setAuditStatus(AUDIT_PASSED);
         if (product.getStatus() == null) {
             product.setStatus(STATUS_ON_SALE);
@@ -76,6 +83,7 @@ public class ProductAddServiceImpl implements ProductAddService {
         productDoc.setProductDesc(product.getProductDesc());
         productDoc.setPrice(product.getPrice());
         productDoc.setMainImage(product.getMainImage());
+        productDoc.setAvailableStock(product.getAvailableStock());
         productDoc.setStatus(product.getStatus());
         productDoc.setAuditStatus(product.getAuditStatus());
         productDoc.setDeleted(product.getDeleted());

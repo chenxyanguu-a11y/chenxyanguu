@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.util.ObjectBuilder;
 import com.example.mallproduct.entity.Product;
+import com.example.mallproduct.es.ProductDoc;
 import com.example.mallproduct.exception.EsExcetpionHandler;
 import com.example.mallproduct.mapper.ProductMapper;
 import org.junit.jupiter.api.Test;
@@ -89,6 +90,9 @@ class ProductSyncServiceImplTest {
         assertThat(bulkRequests.get(0).index()).isEqualTo("product");
         assertThat(bulkRequests.get(0).operations()).hasSize(1000);
         assertThat(bulkRequests.get(1).operations()).hasSize(2);
+        assertThat(bulkRequests.get(0).operations().get(0).index().document())
+                .isInstanceOfSatisfying(ProductDoc.class,
+                        productDoc -> assertThat(productDoc.getAvailableStock()).isEqualTo(88));
         verify(productMapper).selectNextBatch(0L, 1000);
         verify(productMapper).selectNextBatch(1000L, 1000);
         verify(elasticsearchClient, times(2)).bulk(org.mockito.ArgumentMatchers
@@ -156,6 +160,7 @@ class ProductSyncServiceImplTest {
         product.setAuditStatus(1);
         product.setDeleted(0);
         product.setCreateTime(LocalDateTime.of(2026, 5, 12, 15, 0));
+        product.setAvailableStock(88);
         return product;
     }
 }

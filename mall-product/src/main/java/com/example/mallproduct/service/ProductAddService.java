@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface ProductAddService {
 
-    Product addProduct(Product product) throws IOException;
+    Product addProduct(Product product, Long userId, String role) throws IOException;
 }

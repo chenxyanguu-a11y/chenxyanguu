@@ -11,4 +11,9 @@ public class GlobalExceptionHandler {
     public Result handleUserException(EsExcetpionHandler e) {
         return Result.error(e.getCode(),e.getMessage());
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public Result handleBusinessException(BusinessException e) {
+        return Result.error(e.getCode(), e.getMessage());
+    }
 }

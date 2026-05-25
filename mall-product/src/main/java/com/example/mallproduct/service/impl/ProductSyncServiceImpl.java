@@ -41,6 +41,7 @@ public class ProductSyncServiceImpl implements ProductSyncService {
 
         while (true) {
             List<Product> products = productMapper.selectNextBatch(lastId, BATCH_SIZE);
+
             if (products.isEmpty()) {
                 return total;
             }
@@ -86,6 +87,7 @@ public class ProductSyncServiceImpl implements ProductSyncService {
     }
 
     private ProductDoc toProductDoc(Product product) {
+        System.out.println(product.getAvailableStock());
         ProductDoc productDoc = new ProductDoc();
         productDoc.setId(product.getId());
         productDoc.setMerchantId(product.getMerchantId());
@@ -94,6 +96,7 @@ public class ProductSyncServiceImpl implements ProductSyncService {
         productDoc.setProductDesc(product.getProductDesc());
         productDoc.setPrice(product.getPrice());
         productDoc.setMainImage(product.getMainImage());
+        productDoc.setAvailableStock(product.getAvailableStock());
         productDoc.setStatus(product.getStatus());
         productDoc.setAuditStatus(product.getAuditStatus());
         productDoc.setDeleted(product.getDeleted());
