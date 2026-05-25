@@ -2,15 +2,16 @@ server:
   port: 8080
 
 spring:
-  application:
-    name: mall-gateway
   data:
     redis:
-      host: 127.0.0.1
+      host: 192.168.22.128
       port: 6379
       password: 123456
-      timeout: 10s
+      timeout: 6s
       database: 0
+
+  application:
+    name: mall-gateway
   cloud:
     nacos:
       discovery:
@@ -18,25 +19,25 @@ spring:
     gateway:
       routes:
         - id: mall-user-route
-          uri: lb://user-service
+          uri: lb://mall-user
           predicates:
             - Path=/api/user/**
           filters:
             - StripPrefix=1
         - id: mall-auth-route
-          uri: lb://auth-service
+          uri: lb://mall-auth
           predicates:
             - Path=/api/auth/**
           filters:
             - StripPrefix=1
         - id: mall-product-route
-          uri: lb://product-service
+          uri: lb://mall-product
           predicates:
             - Path=/api/product/**
           filters:
             - StripPrefix=1
         - id: order-service-route
-          uri: lb://order-service
+          uri: lb://mall-order
           predicates:
             - Path=/api/order/**
           filters:
@@ -53,7 +54,3 @@ mall:
         - /api/user/register
         - /api/product/search
         - /api/product/page
-        - /api/product/{id}
-      permission-rules:
-        /api/product/add: product:add
-        /api/product/sync: product:sync

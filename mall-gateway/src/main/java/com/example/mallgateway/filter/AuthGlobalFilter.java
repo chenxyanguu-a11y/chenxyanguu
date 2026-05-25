@@ -19,8 +19,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
@@ -41,7 +39,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
+        System.out.println("DEBUG: 当前进入网关的路径是 -> " + path);
         if (isWhitelist(path)) {
+            System.out.println("DEBUG: 该路径在白名单内，跳过权限校验");
             return chain.filter(exchange);
         }
 
@@ -60,8 +60,10 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
         JwtUserInfo userInfo;
         try {
+            System.out.println("nihaoadkfjakdfjajf"+token);
             userInfo = jwtUtil.parseToken(token);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return GatewayResponseUtil.unauthorized(exchange);
         }
 
@@ -70,11 +72,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
                 .flatMap(exists -> {
                     if (!Boolean.TRUE.equals(exists)) {
                         return GatewayResponseUtil.unauthorized(exchange);
-                    }
-                    String requiredPermission = getRequiredPermission(path);
-                    if (StringUtils.hasText(requiredPermission)
-                            && !userInfo.getPermissions().contains(requiredPermission)) {
-                        return GatewayResponseUtil.forbidden(exchange);
                     }
                     ServerWebExchange mutatedExchange = addUserHeaders(exchange, userInfo);
                     return chain.filter(mutatedExchange);
@@ -95,14 +92,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         return false;
     }
 
-    private String getRequiredPermission(String path) {
-        for (Map.Entry<String, String> entry : authProperties.getPermissionRules().entrySet()) {
-            if (pathMatcher.match(entry.getKey(), path)) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
+
 
     private ServerWebExchange addUserHeaders(ServerWebExchange exchange, JwtUserInfo userInfo) {
         ServerHttpRequest request = exchange.getRequest()
@@ -110,18 +100,16 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
                 .headers(headers -> {
                     headers.set("X-User-Id", userInfo.getUserId());
                     headers.set("X-Username", encodeHeaderValue(userInfo.getUsername()));
-                    headers.set("X-Roles", join(userInfo.getRoles()));
-                    headers.set("X-Permissions", join(userInfo.getPermissions()));
+                    headers.set("X-Role", userInfo.getRole());
                 })
                 .build();
         return exchange.mutate().request(request).build();
     }
 
     private String encodeHeaderValue(String value) {
+        if (value == null) {
+            return "";
+        }
         return URLEncoder.encode(value, StandardCharsets.UTF_8);
-    }
-
-    private String join(List<String> values) {
-        return String.join(",", values);
     }
 }
